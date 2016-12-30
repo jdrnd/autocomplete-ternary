@@ -30,7 +30,7 @@ void TST_insert(Node* root, const char* word){
   if (letter == '\0') return; // empty string
 
   if (root == NULL) return;
-  
+
   while (*word != '\0') {
 
     letter = *word;
@@ -47,6 +47,7 @@ void TST_insert(Node* root, const char* word){
         currNode->eqChild = TST_getNewNode(letter);
       }
       currNode = currNode->eqChild;
+      ++word;
     }
     else {
       // letter > val
@@ -55,11 +56,10 @@ void TST_insert(Node* root, const char* word){
       }
       currNode = currNode->rightChild;
     }
-    printf("%c\n", letter);
-    ++word;
+
   }
   // set end of word flag
-  prevNode->isEndOfWord = true;
+  currNode->isEndOfWord = true;
 }
 
 bool TST_doesContain(Node* root, const char* word){
@@ -67,9 +67,10 @@ bool TST_doesContain(Node* root, const char* word){
   Node* currNode = root;
 
   size_t len = strlen(word);
+  int i = 0;
 
-  for (int i = 0; i < len; i++) {
-    printf("%c\t%i", *word, i);
+  while (*word != '\0') {
+    printf("%c\t%c\n", currNode->val, *word);
 
     if (*word > currNode->val){
       if (currNode->rightChild != NULL){
@@ -90,15 +91,17 @@ bool TST_doesContain(Node* root, const char* word){
     }
     else {
       // Values are equal
+      ++i;
       if (currNode->eqChild != NULL){
         currNode = currNode->eqChild;
+        ++word;
       }
       else {
-        if (i == len - 1 && currNode->isEndOfWord) return true;
+        if (i == len && currNode->isEndOfWord) return true;
         else return false;
       }
-      ++word;
     }
   }
-  return false;
+  if (i == len && currNode->isEndOfWord) return true;
+  else return false;
 }
