@@ -62,7 +62,7 @@ void TST_insert(Node* root, const char* word){
   currNode->isEndOfWord = true;
 }
 
-bool TST_doesContain(Node* root, const char* word){
+Node* TST_getLastNode(Node* root, const char* word){
   if (root == NULL || *word == '\0') return false;
   Node* currNode = root;
 
@@ -77,7 +77,7 @@ bool TST_doesContain(Node* root, const char* word){
         currNode = currNode->rightChild;
       }
       else {
-        return false;
+        return NULL;
       }
     }
     else if (*word < currNode->val) {
@@ -86,7 +86,7 @@ bool TST_doesContain(Node* root, const char* word){
         currNode = currNode->leftChild;
       }
       else {
-        return false;
+        return NULL;
       }
     }
     else {
@@ -97,11 +97,21 @@ bool TST_doesContain(Node* root, const char* word){
         ++word;
       }
       else {
-        if (i == len && currNode->isEndOfWord) return true;
-        else return false;
+        if (i == len && currNode->isEndOfWord) return currNode;
+        else return NULL;
       }
     }
   }
-  if (i == len && currNode->isEndOfWord) return true;
-  else return false;
+  return currNode;
+}
+
+bool TST_doesContain(Node* root, const char* word){
+  const char* word2 = word;
+  Node* node = TST_getLastNode(root, word2);
+
+  if (!word || !*word || !node) return false;
+  if (word[strlen(word) - 1] != node->val) return false;
+  if (!node->isEndOfWord) return false;
+
+  return true;
 }
