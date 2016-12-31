@@ -70,7 +70,6 @@ Node* TST_getLastNode(Node* root, const char* word){
   int i = 0;
 
   while (*word != '\0') {
-    printf("%c\t%c\n", currNode->val, *word);
 
     if (*word > currNode->val){
       if (currNode->rightChild != NULL){
@@ -114,4 +113,10 @@ bool TST_doesContain(Node* root, const char* word){
   if (!node->isEndOfWord) return false;
 
   return true;
+}
+
+const char* TST_getCompletions(Node* root, const char* word){
+  // TODO use custom stack impilemtation to traverse the tree
+  // TODO break out into .c and .h files
+
 }
