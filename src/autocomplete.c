@@ -27,36 +27,59 @@ void TST_insert(Node* root, const char* word){
   Node* currNode = root;
 
   letter = *word;
-  if (letter == '\0') return; // empty string
 
+  if (letter == '\0') return; // empty string
   if (root == NULL) return;
 
-  while (*word != '\0') {
-
-    letter = *word;
+  while (letter != '\0') {
     prevNode = currNode;
 
-    if (letter < currNode->val){
-      if (currNode->leftChild == NULL){
-        currNode->leftChild = TST_getNewNode(letter);
-      }
-      currNode = currNode->leftChild;
-    }
-    else if (letter == currNode->val){
-      if (currNode->eqChild== NULL){
-        currNode->eqChild = TST_getNewNode(letter);
-      }
+    if (!currNode->eqChild) {
+      // No child, set next letter as child
+      currNode->eqChild = TST_getNewNode(letter);
       currNode = currNode->eqChild;
       ++word;
     }
     else {
-      // letter > val
-      if (currNode->rightChild == NULL) {
-        currNode->rightChild = TST_getNewNode(letter);
+      if (letter > currNode->val){
+        if (!currNode->rightChild) {
+          currNode->rightChild = TST_getNewNode(letter);
+          currNode = currNode->rightChild;
+          ++word;
+        }
+        else if (letter == currNode->rightChild->val) {
+          currNode = currNode->rightChild;
+          ++word;
+        }
+        else {
+          currNode = currNode->rightChild;
+        }
       }
-      currNode = currNode->rightChild;
+      else if (*word < currNode->val) {
+        if (!currNode->leftChild) {
+          currNode->leftChild = TST_getNewNode(letter);
+        }
+        else if (letter == currNode->leftChild->val) {
+          currNode = currNode->leftChild;
+          ++word;
+        }
+        else {
+          currNode = currNode->leftChild;
+        }
+      }
+      else {
+        // letter == currNode->val
+        // We already know currNode->eqChild exists
+        if (letter == currNode->eqChild->val) {
+          currNode = currNode->eqChild;
+          ++word;
+        }
+        else {
+          currNode = currNode->eqChild;
+        }
+      }
     }
-
+    letter = *word;
   }
   // set end of word flag
   currNode->isEndOfWord = true;
@@ -65,48 +88,41 @@ void TST_insert(Node* root, const char* word){
 Node* TST_getLastNode(Node* root, const char* word){
   if (root == NULL || *word == '\0') return false;
   Node* currNode = root;
-
-  size_t len = strlen(word);
-  int i = 0;
+  char letter = *word;
 
   while (*word != '\0') {
-
-    if (*word > currNode->val){
-      if (currNode->rightChild != NULL){
-        currNode = currNode->rightChild;
-      }
-      else {
-        return NULL;
-      }
-    }
-    else if (*word < currNode->val) {
-      // char < node's val
-      if (currNode->leftChild != NULL){
-        currNode = currNode->leftChild;
-      }
-      else {
-        return NULL;
-      }
+    if (currNode->eqChild && letter == currNode->eqChild->val){
+      currNode = currNode->eqChild;
+      ++word;
     }
     else {
-      // Values are equal
-      ++i;
-      if (currNode->eqChild != NULL){
+      if (letter == currNode->val) {
+        if (!currNode->eqChild) return NULL;
         currNode = currNode->eqChild;
-        ++word;
+      }
+      else if (letter > currNode->val) {
+        if (!currNode->rightChild) return NULL;
+        currNode = currNode->rightChild;
+        if (letter == currNode->val) ++word;
       }
       else {
-        if (i == len && currNode->isEndOfWord) return currNode;
-        else return NULL;
+        // letter < currNode->val
+        if (!currNode->leftChild) return NULL;
+        currNode = currNode->leftChild;
+        if (letter == currNode->val) ++word;
       }
     }
+    letter = *word;
   }
-  return currNode;
+
+  if (currNode->isEndOfWord){
+    return currNode;
+  }
+  else return NULL;
 }
 
 bool TST_doesContain(Node* root, const char* word){
-  const char* word2 = word;
-  Node* node = TST_getLastNode(root, word2);
+  Node* node = TST_getLastNode(root, word);
 
   if (!word || !*word || !node) return false;
   if (word[strlen(word) - 1] != node->val) return false;
@@ -118,5 +134,5 @@ bool TST_doesContain(Node* root, const char* word){
 const char* TST_getCompletions(Node* root, const char* word){
   // TODO use custom stack impilemtation to traverse the tree
   // TODO break out into .c and .h files
-
+  return NULL;
 }
