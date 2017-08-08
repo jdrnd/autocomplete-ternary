@@ -6,6 +6,8 @@
 #include "autocomplete.c"
 
 void runTests(){
+  printf("%s", "Running Tests..");
+  
   Node* root = TST_getNewNode('\0');
 
   TST_insert(root, "test");

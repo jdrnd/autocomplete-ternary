@@ -21,104 +21,66 @@ Node* TST_getNewNode(char value) {
   return newNode;
 }
 
-void TST_insert(Node* root, const char* word){
-  char letter;
-  Node* prevNode = root;
-  Node* currNode = root;
+void TST_insert(Node* node, const char* word){
+  if (node->val == *word) ++word;
 
-  letter = *word;
-
-  if (letter == '\0') return; // empty string
-  if (root == NULL) return;
-
-  while (letter != '\0') {
-    prevNode = currNode;
-
-    if (!currNode->eqChild) {
-      // No child, set next letter as child
-      currNode->eqChild = TST_getNewNode(letter);
-      currNode = currNode->eqChild;
-      ++word;
-    }
-    else {
-      if (letter > currNode->val){
-        if (!currNode->rightChild) {
-          currNode->rightChild = TST_getNewNode(letter);
-          currNode = currNode->rightChild;
-          ++word;
-        }
-        else if (letter == currNode->rightChild->val) {
-          currNode = currNode->rightChild;
-          ++word;
-        }
-        else {
-          currNode = currNode->rightChild;
-        }
-      }
-      else if (*word < currNode->val) {
-        if (!currNode->leftChild) {
-          currNode->leftChild = TST_getNewNode(letter);
-        }
-        else if (letter == currNode->leftChild->val) {
-          currNode = currNode->leftChild;
-          ++word;
-        }
-        else {
-          currNode = currNode->leftChild;
-        }
-      }
-      else {
-        // letter == currNode->val
-        // We already know currNode->eqChild exists
-        if (letter == currNode->eqChild->val) {
-          currNode = currNode->eqChild;
-          ++word;
-        }
-        else {
-          currNode = currNode->eqChild;
-        }
-      }
-    }
-    letter = *word;
+  if (*word == '\0') {
+    node->isEndOfWord = true;
+    return;
   }
-  // set end of word flag
-  currNode->isEndOfWord = true;
+
+  printf("%c", *word);
+
+  if (!node->eqChild) {
+    node->eqChild = TST_getNewNode(*word);
+    TST_insert(node->eqChild, word);
+  }
+  else if (*word == node->val || node->eqChild->val == *word) {
+    TST_insert(node->eqChild, word);
+  }
+  else if (*word < node->val) {
+    if (!node->leftChild){
+      node->leftChild = TST_getNewNode(*word);
+    }
+    TST_insert(node->leftChild, word);
+  }
+  else if (*word > node->val) {
+    if (!node->rightChild) {
+      node->rightChild = TST_getNewNode(*word);
+    }
+    TST_insert(node->rightChild, word);
+  }
 }
 
-Node* TST_getLastNode(Node* root, const char* word){
-  if (root == NULL || *word == '\0') return false;
-  Node* currNode = root;
-  char letter = *word;
-
-  while (*word != '\0') {
-    if (currNode->eqChild && letter == currNode->eqChild->val){
-      currNode = currNode->eqChild;
-      ++word;
-    }
-    else {
-      if (letter == currNode->val) {
-        if (!currNode->eqChild) return NULL;
-        currNode = currNode->eqChild;
-      }
-      else if (letter > currNode->val) {
-        if (!currNode->rightChild) return NULL;
-        currNode = currNode->rightChild;
-        if (letter == currNode->val) ++word;
-      }
-      else {
-        // letter < currNode->val
-        if (!currNode->leftChild) return NULL;
-        currNode = currNode->leftChild;
-        if (letter == currNode->val) ++word;
-      }
-    }
-    letter = *word;
+Node* TST_getLastNode(Node* node, const char* word){
+  if (!node) {
+    return NULL;
   }
 
-  if (currNode->isEndOfWord){
-    return currNode;
+  if (*word == '\0') {
+    return node;
   }
-  else return NULL;
+
+  // If next letter is a direct descendant, recures to that node and advance the word pointer
+  if (node->eqChild && node->eqChild->val == *word){
+    return TST_getLastNode(node->eqChild, ++word);
+  }
+  else if (node->leftChild && node->leftChild->val == *word) {
+    return TST_getLastNode(node->leftChild, ++word);
+  }
+  else if (node->rightChild && node->rightChild->val == *word) {
+    return TST_getLastNode(node->rightChild, ++word);
+  }
+  // If next letter is not a descendant, recurse to the correct child node without advancing the word pointer
+  else if (*word < node->val) {
+    return TST_getLastNode(node->leftChild, word);
+  }
+  else if (*word == node->val) {
+    return TST_getLastNode(node->eqChild, word);
+  }
+  else { // *word > node->val
+    return TST_getLastNode(node->rightChild, word);
+  }
 }
 
 bool TST_doesContain(Node* root, const char* word){
