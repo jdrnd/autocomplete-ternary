@@ -7,16 +7,17 @@
 
 void runTests(){
   printf("%s", "Running Tests..");
-  
-  Node* root = TST_getNewNode('\0');
 
-  TST_insert(root, "test");
+  Node* root = (Node*)NULL;
+
+  root = TST_insert(root, "test");
   assert(TST_doesContain(root, "test") == true);
 
-  TST_insert(root, "joel");
+  root = TST_insert(root, "joel");
   assert(TST_doesContain(root, "joel") == true);
 
-  TST_insert(root, "testing");
+  root = TST_insert(root, "testing");
+  assert(TST_doesContain(root, "test") == true);
   assert(TST_doesContain(root, "testing") == true);
 
   assert(TST_doesContain(root, "notword") == false);
