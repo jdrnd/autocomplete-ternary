@@ -115,13 +115,17 @@ void TST_find_completions(Node* node, const char* prefix, List* completions) {
   if (node->isEndOfWord) List_add_to_list(completions, prefix);
 
   // Node has no children, we've reached a leaf node
-  if (node->val == '\0') {
-    return;
-  }
+  if (!node->leftChild && !node->rightChild && !node->eqChild) return;
+
+  // We need to add strings here the proper way... :(
+  // TODO optimize this
+  char *new_prefix = malloc(strlen(prefix) + 2);
+  strcpy(new_prefix, prefix);
+  strcat(new_prefix, (const char*) &node->val);
 
   // DFS returns completions in order
   TST_find_completions(node->leftChild, prefix, completions);
-  TST_find_completions(node->eqChild, prefix + node->val, completions);
+  TST_find_completions(node->eqChild, new_prefix, completions);
   TST_find_completions(node->rightChild, prefix, completions);
 
 
