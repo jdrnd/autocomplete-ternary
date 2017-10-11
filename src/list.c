@@ -1,11 +1,15 @@
-// Private
-typedef struct ListNode {
-  const char* contents;
-  struct ListNode* next;
-} ListNode;
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-ListNode* get_list_node(const char* contents) {
+#include "list.h"
+
+
+ListNode* get_list_node(const char* new_contents) {
   ListNode* newNode = (ListNode*)malloc( sizeof(ListNode) );
+  char* contents = malloc(strlen(new_contents) + 1);
+  strcpy(contents, new_contents);
   if (newNode == NULL) printf("Error with malloc");
   newNode->contents = contents;
   newNode->next = NULL;
@@ -13,10 +17,7 @@ ListNode* get_list_node(const char* contents) {
   return newNode;
 }
 
-typedef struct List {
-  struct ListNode* head;
-  struct ListNode* tail;
-} List;
+
 
 // Public
 
@@ -41,5 +42,18 @@ void List_print_list(List* list) {
   while (node) {
     puts(node->contents);
     node = node->next;
+  }
+}
+
+void List_clear_list(List* list) {
+  ListNode* node = list->head;
+  ListNode* prev_node = list->head;
+
+  while(node != NULL) {
+    prev_node = node;
+    node = node->next;
+
+    free(prev_node->contents);
+    free(prev_node);
   }
 }

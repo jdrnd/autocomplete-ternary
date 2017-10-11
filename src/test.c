@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#include "autocomplete.c"
+#include "autocomplete.h"
 
 Node* test_insertion_and_basic_containment(Node* root) {
   puts("Running insertion and basic containment tests");
@@ -19,6 +19,8 @@ Node* test_insertion_and_basic_containment(Node* root) {
 
   assert(!TST_doesContain(root, "notword"));
   assert(!TST_doesContain(root, "testin"));
+
+  puts("Insertion and containment tests passed");
   return root;
 }
 
@@ -38,11 +40,13 @@ Node* test_dictionary_insertion(Node* root) {
 
   assert(TST_doesContain(root, "trigs"));
   assert(TST_doesContain(root, "zyzzyvas"));
+
+  puts("Dictionary insertion tests passed");
   return root;
 }
 
 void runTests(){
-  puts("Running Tests..");
+  puts("\n\nRunning Tests..");
 
   Node* root = (Node*)NULL;
 
@@ -50,5 +54,6 @@ void runTests(){
   root = test_insertion_and_basic_containment(root);
   root = test_dictionary_insertion(root);
 
-  TST_get_completions(root);
+  TST_clear(root);
+  puts("All tests passed! \n\n");
 }
